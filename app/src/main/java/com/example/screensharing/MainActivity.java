@@ -4,16 +4,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.example.jsonsocket.currentState.CurrentState;
+import com.example.jsonsocket.jsonsEntities.PinchEvent;
 
 import java.util.Date;
 
@@ -25,21 +30,12 @@ public class MainActivity extends AppCompatActivity {
     SwipeListener swipeListener;
 
 
-
     private int getHeigthDevice() {
-        Point point = new Point();
-        getWindowManager().getDefaultDisplay().getRealSize(point);
-        int height = point.y;
-        //int width = point.x;
-        return height;
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
     private int getWidthDevice() {
-        Point point = new Point();
-        getWindowManager().getDefaultDisplay().getRealSize(point);
-        //int height = point.y;
-        int width = point.x;
-        return width;
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
     }
 
     private String getMACAddress() {
@@ -49,9 +45,19 @@ public class MainActivity extends AppCompatActivity {
         return address;
     }
 
+    private String getDeviceName() {
+        String userDeviceName = Settings.Global.getString(getContentResolver(), Settings.Global.DEVICE_NAME);
+        if(userDeviceName == null)
+            userDeviceName = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
+        return userDeviceName;
+    }
+
     private boolean touchAScreenLimit(float limit, float coord) {
+        if(coord <0) {
+            return true;
+        }
         int absValue = (int) Math.abs(coord - limit);
-        return absValue <= 30;
+        return absValue <= 35;
     }
 
     @Override
@@ -64,10 +70,90 @@ public class MainActivity extends AppCompatActivity {
         tvTest = findViewById(R.id.tvTest);
 
         swipeListener = new SwipeListener(constraintLayout);
-
-
     }
 
+    private void sendCoordsToPinch(float xDiff, float yDiff, MotionEvent e2,int threshoold, float velocityX, float velocityY, int velocity_threshold) {
+        if(Math.abs(xDiff) > Math.abs(yDiff)){
+            if(Math.abs(xDiff) > threshoold && Math.abs(velocityX) >velocity_threshold){
+                if(xDiff>0){
+                    //Right
+                    tvTest.setText("Right");
+                    if(touchAScreenLimit(getWidthDevice(),e2.getX())) {
+                        //INFO TO SEND
+                        PinchEvent pinchEvent = new PinchEvent();
+                        pinchEvent.setDeviceName(getDeviceName());
+                        pinchEvent.setPhysicalAddress("");
+                        pinchEvent.setPosPinchX(getWidthDevice());
+                        pinchEvent.setPosPinchY(e2.getY());
+                        pinchEvent.setScreenHeigth(getHeigthDevice());
+                        pinchEvent.setScreenWidth(getWidthDevice());
+                        pinchEvent.setTimePinch(new Date());
+                        pinchEvent.setDirectionPinch("Right");
+
+                        CurrentState.getInstance().setPinchEvent(pinchEvent);
+                    }
+
+                } else {
+                    //Left
+                    tvTest.setText("Left");
+                    if(touchAScreenLimit(0,e2.getX())) {
+                        //INFO TO SEND
+                        PinchEvent pinchEvent = new PinchEvent();
+                        pinchEvent.setDeviceName(getDeviceName());
+                        pinchEvent.setPhysicalAddress("");
+                        pinchEvent.setPosPinchX(0);
+                        pinchEvent.setPosPinchY(e2.getY());
+                        pinchEvent.setScreenHeigth(getHeigthDevice());
+                        pinchEvent.setScreenWidth(getWidthDevice());
+                        pinchEvent.setTimePinch(new Date());
+                        pinchEvent.setDirectionPinch("Left");
+
+                        CurrentState.getInstance().setPinchEvent(pinchEvent);
+                    }
+
+                }
+            }
+        }else{
+            if(Math.abs(yDiff) > threshoold && Math.abs(velocityY) > velocity_threshold){
+                if(yDiff>0){
+                    //Down
+                    tvTest.setText("Down");
+                    if(touchAScreenLimit(getHeigthDevice(),e2.getY())) {
+                        //INFO TO SEND
+                        PinchEvent pinchEvent = new PinchEvent();
+                        pinchEvent.setDeviceName(getDeviceName());
+                        pinchEvent.setPhysicalAddress("");
+                        pinchEvent.setPosPinchX(e2.getX());
+                        pinchEvent.setPosPinchY(getHeigthDevice());
+                        pinchEvent.setScreenHeigth(getHeigthDevice());
+                        pinchEvent.setScreenWidth(getWidthDevice());
+                        pinchEvent.setTimePinch(new Date());
+                        pinchEvent.setDirectionPinch("Down");
+
+                        CurrentState.getInstance().setPinchEvent(pinchEvent);
+                    }
+
+                } else {
+                    //Up
+                    tvTest.setText("Up");
+                    if(touchAScreenLimit(0,e2.getY())) {
+                        //INFO TO SEND
+                        PinchEvent pinchEvent = new PinchEvent();
+                        pinchEvent.setDeviceName(getDeviceName());
+                        pinchEvent.setPhysicalAddress("");
+                        pinchEvent.setPosPinchX(e2.getX());
+                        pinchEvent.setPosPinchY(0);
+                        pinchEvent.setScreenHeigth(getHeigthDevice());
+                        pinchEvent.setScreenWidth(getWidthDevice());
+                        pinchEvent.setTimePinch(new Date());
+                        pinchEvent.setDirectionPinch("Up");
+
+                        CurrentState.getInstance().setPinchEvent(pinchEvent);
+                    }
+                }
+            }
+        }
+    }
 
     private class SwipeListener implements View.OnTouchListener{
 
@@ -90,81 +176,8 @@ public class MainActivity extends AppCompatActivity {
                             float yDiff = e2.getY() - e1.getY();
 
                             try{
-                                if(Math.abs(xDiff) > Math.abs(yDiff)){
-                                    if(Math.abs(xDiff) > threshoold && Math.abs(velocityX) >velocity_threshold){
-                                        if(xDiff>0){
-                                            //Right
-                                            tvTest.setText("Right");
-                                            //INFO TO SEND
-                                            Log.i("//", "////////////////////");
-
-                                            Log.i("GET MAC ADDRESS", getMACAddress());
-                                            Log.i("TOUCH A LIMIT", String.valueOf(touchAScreenLimit(getWidthDevice(),e2.getX())));
-                                            Log.i("XPOS", String.valueOf(getWidthDevice()));
-                                            Log.i("YPOS", String.valueOf(e2.getY()));
-                                            Log.i("TIME", String.valueOf(new Date()));
-                                            Log.i("DIRECTION", "Right");
-
-                                            Log.i("//", "////////////////////");
-
-
-                                        } else {
-                                            //Left
-                                            tvTest.setText("Left");
-
-                                            //INFO TO SEND
-                                            Log.i("//", "////////////////////");
-
-                                            Log.i("GET MAC ADDRESS", getMACAddress());
-                                            Log.i("TOUCH A LIMIT", String.valueOf(touchAScreenLimit(0,e2.getX())));
-                                            Log.i("XPOS", String.valueOf(0));
-                                            Log.i("YPOS", String.valueOf(e2.getY()));
-                                            Log.i("TIME", String.valueOf(new Date()));
-                                            Log.i("DIRECTION", "Left");
-
-                                            Log.i("//", "////////////////////");
-
-                                        }
-                                        return true;
-                                    }
-                                }else{
-                                    if(Math.abs(yDiff) > threshoold && Math.abs(velocityY) > velocity_threshold){
-                                        if(yDiff>0){
-                                            //Down
-                                            tvTest.setText("Down");
-
-                                            //INFO TO SEND
-                                            Log.i("//", "////////////////////");
-
-                                            Log.i("GET MAC ADDRESS", getMACAddress());
-                                            Log.i("TOUCH A LIMIT", String.valueOf(touchAScreenLimit(getHeigthDevice(),e2.getY())));
-                                            Log.i("XPOS", String.valueOf(e2.getX()));
-                                            Log.i("YPOS", String.valueOf(getHeigthDevice()));
-                                            Log.i("TIME", String.valueOf(new Date()));
-                                            Log.i("DIRECTION", "Down");
-
-                                            Log.i("//", "////////////////////");
-
-                                        } else {
-                                            //Up
-                                            tvTest.setText("Up");
-
-                                            //INFO TO SEND
-                                            Log.i("//", "////////////////////");
-
-                                            Log.i("GET MAC ADDRESS", getMACAddress());
-                                            Log.i("TOUCH A LIMIT", String.valueOf(touchAScreenLimit(0,e2.getY())));
-                                            Log.i("XPOS", String.valueOf(e2.getX()));
-                                            Log.i("YPOS", String.valueOf(0));
-                                            Log.i("TIME", String.valueOf(new Date()));
-                                            Log.i("DIRECTION", "Up");
-
-                                            Log.i("//", "////////////////////");
-
-                                        }
-                                        return true;
-                                    }
-                                }
+                                sendCoordsToPinch(xDiff, yDiff, e2, threshoold, velocityX, velocityY, velocity_threshold);
+                                return true;
                             }catch (Exception e){
                                 e.printStackTrace();
                             }

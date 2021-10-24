@@ -76,7 +76,7 @@ public class ServerWifiDirectSocket extends Thread {
                                     //se puede convertir de texto a JSON si Fuera Necesario
                                     JsonEntity jsonEntity = gson.fromJson(tempMsg, JsonEntity.class);
                                     if (messageTextView != null) {
-                                        messageTextView.setText(jsonEntity.getMessage());
+                                        //messageTextView.setText(jsonEntity.getMessage());
                                     }
                                 }
                             });

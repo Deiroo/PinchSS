@@ -7,8 +7,8 @@ public class PinchEvent {
     private String physicalAddress;
     private float posPinchX;
     private float posPinchY;
-    private float screenSizeX;
-    private float screenSizeY;
+    private float screenWidth;
+    private float screenHeigth;
     private Date timePinch;
     private String directionPinch;
 
@@ -44,20 +44,20 @@ public class PinchEvent {
         this.posPinchY = posPinchY;
     }
 
-    public float getScreenSizeX() {
-        return screenSizeX;
+    public float getScreenWidth() {
+        return screenWidth;
     }
 
-    public void setScreenSizeX(float screenSizeX) {
-        this.screenSizeX = screenSizeX;
+    public void setScreenWidth(float screenWidth) {
+        this.screenWidth = screenWidth;
     }
 
-    public float getScreenSizeY() {
-        return screenSizeY;
+    public float getScreenHeigth() {
+        return screenHeigth;
     }
 
-    public void setScreenSizeY(float screenSizeY) {
-        this.screenSizeY = screenSizeY;
+    public void setScreenHeigth(float screenHeigth) {
+        this.screenHeigth = screenHeigth;
     }
 
     public Date getTimePinch() {

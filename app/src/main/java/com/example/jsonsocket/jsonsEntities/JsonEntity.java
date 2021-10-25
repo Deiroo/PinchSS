@@ -3,6 +3,10 @@ package com.example.jsonsocket.jsonsEntities;
 public class JsonEntity {
     private String typeMessage;//SCREEN_SHARING, UPDATE_STATE, SYNC_PALETTE,
 
+    private double canvasWidth;
+
+    private double canvasHeigth;
+
     //Para SCREEN_SHARING
     private PinchEvent pinchEvent;
 
@@ -26,5 +30,21 @@ public class JsonEntity {
 
     public void setPinchEvent(PinchEvent pinchEvent) {
         this.pinchEvent = pinchEvent;
+    }
+
+    public double getCanvasWidth() {
+        return canvasWidth;
+    }
+
+    public void setCanvasWidth(double canvasWidth) {
+        this.canvasWidth = canvasWidth;
+    }
+
+    public double getCanvasHeigth() {
+        return canvasHeigth;
+    }
+
+    public void setCanvasHeigth(double canvasHeigth) {
+        this.canvasHeigth = canvasHeigth;
     }
 }

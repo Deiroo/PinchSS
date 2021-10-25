@@ -7,31 +7,70 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="380dp"
+        android:layout_height="184dp"
+        android:layout_marginBottom="36dp"
+        android:background="#1DE9B6"
+        app:layout_constraintBottom_toTopOf="@+id/btnDiscover"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.483"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible">
+
+    </ListView>
+
     <Button
-        android:id="@+id/btnOnOff"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="161dp"
-        android:layout_marginTop="341dp"
-        android:layout_marginEnd="162dp"
-        android:layout_marginBottom="342dp"
-        android:text="ON/OFF"
+        android:id="@+id/btnDiscover"
+        android:layout_width="97dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="28dp"
+        android:text="Buscar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/switchEnablePinch" />
+
+    <Switch
+        android:id="@+id/switchEnablePinch"
+        android:layout_width="81dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="28dp"
+        android:text="Pinch"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Switch
+        android:id="@+id/switchIsPrincipal"
+        android:layout_width="126dp"
+        android:layout_height="39dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="28dp"
+        android:text="EsPrincipal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/btnDiscover" />
+
+    <ImageView
+        android:id="@+id/imageViewPattern"
+        android:layout_width="1050dp"
+        android:layout_height="433dp"
+        app:srcCompat="@drawable/pattern_image"
+        tools:layout_editor_absoluteX="-116dp"
+        tools:layout_editor_absoluteY="9dp" />
 
     <TextView
-        android:id="@+id/tvTest"
+        android:id="@+id/connectionStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="212dp"
-        android:layout_marginEnd="176dp"
-        android:layout_marginBottom="500dp"
         android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnDiscover"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listView"
+        app:layout_constraintVertical_bias="0.411" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

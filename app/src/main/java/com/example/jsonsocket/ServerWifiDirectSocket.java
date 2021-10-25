@@ -2,9 +2,12 @@ package com.example.jsonsocket;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.jsonsocket.currentState.CurrentState;
 import com.example.jsonsocket.jsonsEntities.JsonEntity;
+import com.example.jsonsocket.jsonsEntities.PinchEvent;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -22,6 +25,8 @@ public class ServerWifiDirectSocket extends Thread {
     private InputStream inputStream;
     private OutputStream outputStream;
 
+    private ImageView imageView;
+
     Gson gson = new Gson();
 
     TextView messageTextView = null;
@@ -29,8 +34,8 @@ public class ServerWifiDirectSocket extends Thread {
     public ServerWifiDirectSocket() {
     }
 
-    public ServerWifiDirectSocket(TextView messageTextView) {
-        this.messageTextView = messageTextView;
+    public ServerWifiDirectSocket(ImageView imageView) {
+        this.imageView = imageView;
     }
 
     public void write(byte[] bytes){
@@ -75,9 +80,43 @@ public class ServerWifiDirectSocket extends Thread {
                                     //puede ser nulo, se puede modificar a futuro para cambiar la estructura de los mensajes
                                     //se puede convertir de texto a JSON si Fuera Necesario
                                     JsonEntity jsonEntity = gson.fromJson(tempMsg, JsonEntity.class);
-                                    if (messageTextView != null) {
-                                        //messageTextView.setText(jsonEntity.getMessage());
+
+                                    if(jsonEntity.getTypeMessage().equals("SCREEN_SHARING")) {
+                                        PinchEvent currentPinchEvent = CurrentState.getInstance().getPinchEvent();
+                                        Long timeInMyLastPinch = currentPinchEvent.getTimePinch().getTime();
+                                        Long timeInPinch = jsonEntity.getPinchEvent().getTimePinch().getTime();
+
+                                        long absValue = Math.abs(timeInMyLastPinch - timeInPinch);
+                                        if(absValue<=500) {
+                                            //evento ocurre
+                                            if(CurrentState.getInstance().getPinchEvent().getDirectionPinch().equals("Right") &&
+                                                    jsonEntity.getPinchEvent().getDirectionPinch().equals("Left")) {
+                                            }
+                                            if(CurrentState.getInstance().getPinchEvent().getDirectionPinch().equals("Left") &&
+                                                    jsonEntity.getPinchEvent().getDirectionPinch().equals("Right")) {
+                                                float jsonPosPinchX = jsonEntity.getPinchEvent().getPosPinchX();
+                                                float jsonPosPinchY = jsonEntity.getPinchEvent().getPosPinchY();
+                                                float jsonScreenHeigth = jsonEntity.getPinchEvent().getScreenHeigth();
+                                                float jsonScreenWidth = jsonEntity.getPinchEvent().getScreenWidth();
+
+                                                double lienzoH = jsonEntity.getCanvasHeigth();
+                                                double lienzoW = jsonEntity.getCanvasWidth();
+
+                                                float deviceScreenHeigth = CurrentState.getInstance().getPinchEvent().getScreenHeigth();
+                                                float deviceScreenWidth = CurrentState.getInstance().getPinchEvent().getScreenWidth();
+
+                                                float currentPosPinchX = CurrentState.getInstance().getPinchEvent().getPosPinchX();
+                                                float currentPosPinchY = CurrentState.getInstance().getPinchEvent().getPosPinchY();
+
+                                                float newX = (-1)*(jsonPosPinchX + 0)+ currentPosPinchX;//a futuro ese 0 seran las coordenadas origen (0,0) acumulado
+                                                float newY = (-1)*(jsonPosPinchY + 0) + currentPosPinchY;//a futuro ese 0 seran las coordenadas origen (0,0) acumulado
+
+                                                imageView.setY(newY);
+                                                imageView.setX(newX);
+                                            }
+                                        }
                                     }
+
                                 }
                             });
                         }

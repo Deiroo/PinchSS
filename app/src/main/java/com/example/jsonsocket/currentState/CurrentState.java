@@ -10,6 +10,7 @@ public final class CurrentState {
     //Para SCREEN_SHARING
     private PinchEvent pinchEvent;
 
+    //OBTENER EL ORIGEN QUE SERIA DEL LIENZO (0,0) en el primero, en el segundo seria (200,100) por ejemplo
 
     private CurrentState() {
     }

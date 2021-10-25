@@ -7,6 +7,7 @@ import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -232,7 +233,7 @@ public class WifiDirectConnector {
     /**
      * init el info de conector
      */
-    public WifiP2pManager.ConnectionInfoListener initConnectionInfoListener(final TextView connectionStatus, final TextView messageTextView) {
+    public WifiP2pManager.ConnectionInfoListener initConnectionInfoListener(final TextView connectionStatus, final ImageView imageView) {
         return new WifiP2pManager.ConnectionInfoListener() {
             @Override
             public void onConnectionInfoAvailable(WifiP2pInfo info) {
@@ -242,12 +243,12 @@ public class WifiDirectConnector {
                 if(info.groupFormed && info.isGroupOwner){
                     connectionStatus.setText("Anfitrión");
                     isHost = true;
-                    serverClass = new ServerWifiDirectSocket(messageTextView);
+                    serverClass = new ServerWifiDirectSocket(imageView);
                     serverClass.start();
                 } else if(info.groupFormed){
                     connectionStatus.setText("Cliente");
                     isHost = false;
-                    clientClass = new ClientWifiDirectSocket(groupOwnerAddress, messageTextView);
+                    clientClass = new ClientWifiDirectSocket(groupOwnerAddress,imageView);
                     clientClass.start();
                 }
             }

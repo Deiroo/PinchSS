@@ -2,6 +2,7 @@ package com.example.jsonsocket;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -81,13 +83,22 @@ public class ServerWifiDirectSocket extends Thread {
                                     //se puede convertir de texto a JSON si Fuera Necesario
                                     JsonEntity jsonEntity = gson.fromJson(tempMsg, JsonEntity.class);
 
+                                    Log.d("json", String.valueOf(jsonEntity));
                                     if(jsonEntity.getTypeMessage().equals("SCREEN_SHARING")) {
                                         PinchEvent currentPinchEvent = CurrentState.getInstance().getPinchEvent();
-                                        Long timeInMyLastPinch = currentPinchEvent.getTimePinch().getTime();
-                                        Long timeInPinch = jsonEntity.getPinchEvent().getTimePinch().getTime();
+                                        Long timeInMyLastPinch = (long) -1000000000;
+                                        if(currentPinchEvent != null) {
+                                            timeInMyLastPinch = currentPinchEvent.getTimePinch().getTime();
+                                        }
+                                        boolean isInRange = false;
+                                        if(jsonEntity.getPinchEvent() != null) {
+                                            Date datePinch = jsonEntity.getPinchEvent().getTimePinch();
+                                            Long timeInPinch = datePinch.getTime();
+                                            long absValue = Math.abs(timeInMyLastPinch - timeInPinch);
+                                            isInRange = absValue<=500;
+                                        }
 
-                                        long absValue = Math.abs(timeInMyLastPinch - timeInPinch);
-                                        if(absValue<=500) {
+                                        if(isInRange) {
                                             //evento ocurre
                                             if(CurrentState.getInstance().getPinchEvent().getDirectionPinch().equals("Right") &&
                                                     jsonEntity.getPinchEvent().getDirectionPinch().equals("Left")) {
@@ -108,7 +119,7 @@ public class ServerWifiDirectSocket extends Thread {
                                                 float currentPosPinchX = CurrentState.getInstance().getPinchEvent().getPosPinchX();
                                                 float currentPosPinchY = CurrentState.getInstance().getPinchEvent().getPosPinchY();
 
-                                                float newX = (-1)*(jsonPosPinchX + 0)+ currentPosPinchX;//a futuro ese 0 seran las coordenadas origen (0,0) acumulado
+                                                float newX = (-1)*(jsonPosPinchX + 0)+ currentPosPinchX - 100;//a futuro ese 0 seran las coordenadas origen (0,0) acumulado
                                                 float newY = (-1)*(jsonPosPinchY + 0) + currentPosPinchY;//a futuro ese 0 seran las coordenadas origen (0,0) acumulado
 
                                                 imageView.setY(newY);

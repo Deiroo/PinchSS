@@ -95,7 +95,7 @@ public class ServerWifiDirectSocket extends Thread {
                                             Date datePinch = jsonEntity.getPinchEvent().getTimePinch();
                                             Long timeInPinch = datePinch.getTime();
                                             long absValue = Math.abs(timeInMyLastPinch - timeInPinch);
-                                            isInRange = absValue<=500;
+                                            isInRange = absValue<=1000;
                                         }
 
                                         if(isInRange) {
